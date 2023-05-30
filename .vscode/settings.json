@@ -1,5 +1,9 @@
 {
     "files.associations": {
-        "atomic.h": "c"
+        "atomic.h": "c",
+        "atmel_start.h": "c",
+        "atmel_start_pins.h": "c",
+        "driver_init.h": "c",
+        "system.h": "c"
     }
 }
