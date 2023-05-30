@@ -78,7 +78,7 @@ OBJDIR = .
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
 CFLAGS =  -x c $(CDEFS) -DDEBUG -ffunction-sections -g3 -Wall -D__mega809__ $(patsubst %,-I$(QUOTE)%$(QUOTE),$(EXTRAINCDIRS))
-CFLAGS += -B "$(MAKEFILE_DIR)../gcc/dev/atmega809"
+#CFLAGS += -B "$(MAKEFILE_DIR)../gcc/dev/atmega809"
 CFLAGS += -O$(OPT)
 CFLAGS += $(CSTANDARD)
 
@@ -92,7 +92,7 @@ CFLAGS += $(CSTANDARD)
 #  -listing-cont-lines: Sets the maximum number of continuation lines of hex 
 #       dump that will be displayed for a given single line of source input.
 ASFLAGS = $(ADEFS) -DDEBUG -ffunction-sections -g3 -Wall -D__mega809__ $(patsubst %,-I$(QUOTE)%$(QUOTE),$(EXTRAINCDIRS))
-ASFLAGS += -B "$(MAKEFILE_DIR)../gcc/dev/atmega809"
+#ASFLAGS += -B "$(MAKEFILE_DIR)../gcc/dev/atmega809"
 ASFLAGS += -O$(OPT)
 ASFLAGS += $(CSTANDARD)
 
@@ -149,14 +149,22 @@ LDFLAGS += $(MATH_LIB)
 # to get a full listing.
 #
 AVRDUDE_PROGRAMMER = jtag2updi
-
-# com1 = serial port. Use lpt1 to connect to parallel port.
 AVRDUDE_PORT =  COM20
-AVRDUDE_BAUDRATE = 115200
+AVRDUDE_BAUDRATE = 19200
 AVRDUDE_CONFIG_FILE="C:\Users\32470\.platformio\packages\tool-avrdude-megaavr\avrdude.conf"
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
+
+# The fuses are written separately because the size of the fuse section in avrdude.conf is incorrect.
+# More info about the fuses can be found in the Atmega809 datasheet, section 7.8.1.
+AVRDUDE_WRITE_FUSES = -U fuse0:w:0x00:m \
+-U fuse1:w:0x54:m \
+-U fuse2:w:0x02:m \
+-U fuse5:w:0xC9:m \
+-U fuse6:w:0x06:m \
+-U fuse7:w:0x00:m \
+-U fuse8:w:0x00:m
 
 # Uncomment the following if you want avrdude's erase cycle counter.
 # Note that this counter needs to be initialized first using -Yn,
@@ -229,7 +237,7 @@ sizeafter:
 
 # Program the device.  
 upload: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM) $(AVRDUDE_WRITE_FUSES)
 
 
 # Compiler target(s)
